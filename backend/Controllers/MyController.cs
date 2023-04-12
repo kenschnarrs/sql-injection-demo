@@ -23,9 +23,9 @@ public class MyController : ControllerBase
             { 
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
 
-                builder.DataSource = "https://localhost:3307"; 
+                builder.DataSource = "https://127.0.0.1:3307"; 
                 builder.UserID = "root";            
-                builder.Password = "root";     
+                builder.Password = "";     
                 builder.InitialCatalog = "MySQL";
          
                 using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
@@ -35,9 +35,9 @@ public class MyController : ControllerBase
                     
                     connection.Open();       
 
-                    String sql = "SELECT name, collation_name FROM sys.databases";
+                    String sql = "SELECT id, un, pw FROM sys.Tables.APP_USERS";
 
-                   /* using (SqlCommand command = new SqlCommand(sql, connection))
+                    using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -46,7 +46,7 @@ public class MyController : ControllerBase
                                 Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
                             }
                         }
-                    }           */         
+                    }                   
                 }
             }
             catch (SqlException e)
