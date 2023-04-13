@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
@@ -7,7 +7,25 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+import axios from 'axios';
+
 function App() {
+
+  const [state, setState] = useState({un: "", pw: ""});
+
+  function handleSubmit(){
+    console.log("click");
+    console.log(state);
+    axios.get('http://localhost:5211/My', {params: {un: state.un, pw: state.pw}, headers:{"Access-Control-Allow-Origin": "*"}})
+    .then(response => {
+      console.log("OOOOOOOOOOOO");
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   return (
     <div className="App">
       <header>
@@ -48,22 +66,21 @@ function App() {
             </Col>
           </Row>
           <Row>
-            
             <Col md={{ span: 6, offset: 3 }}>
                 <Form>
                   <br></br>
                   <br></br>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control type="email" placeholder="Enter email" />
+                      <Form.Label>Username</Form.Label>
+                      <Form.Control type="input" placeholder="Enter username" value={state.un} onChange={e => setState({un: e.target.value, pw: state.pw})}/>
                     </Form.Group>
 
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                       <Form.Label>Password</Form.Label>
-                      <Form.Control type="password" placeholder="Password" />
+                      <Form.Control type="password" placeholder="Password" value={state.pw} onChange={e => setState({un: state.un, pw: e.target.value})}/>
                   </Form.Group>
-                  <Button variant="primary" type="submit">
-                      Submit
+                  <Button variant="primary" onClick={handleSubmit}>
+                      Submit 
                   </Button>
                   <br></br>
                   <br></br>

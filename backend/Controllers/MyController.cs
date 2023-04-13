@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNet.WebApi.Cors;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace backend.Controllers;
 
 [ApiController]
+//[EnableCors("_myAllowAllOrigins")]
 [Route("[controller]")]
 public class MyController : ControllerBase
 {
@@ -16,44 +18,41 @@ public class MyController : ControllerBase
     }
 
 
-    [HttpPost(Name = "ReceiveData")]
-    public void Post()
+    [HttpGet(Name = "ReceiveData")]
+    public string Get(string un, string pw)
     {
+        Console.WriteLine("called func", un, pw);
         try 
             { 
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-
-                builder.DataSource = "https://127.0.0.1:3307"; 
-                builder.UserID = "root";            
-                builder.Password = "";     
-                builder.InitialCatalog = "MySQL";
+                string connString = "server=localhost;user=root;database=sys;port=3306;password=my_password2";
          
-                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(connString))
                 {
-                    Console.WriteLine("\nQuery data example:");
-                    Console.WriteLine("=========================================\n");
                     
-                    connection.Open();       
+                    connection.Open();
 
-                    String sql = "SELECT id, un, pw FROM sys.Tables.APP_USERS";
 
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
-                            }
-                        }
-                    }                   
+                    String sql = "SELECT un, pw FROM APP_USERS WHERE un ='" + un + "';";
+
+
+
+                    MySqlCommand cmd = new MySqlCommand(sql, connection);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    
+                    while (reader.Read()){
+                        Console.WriteLine(reader["un"] + " " + reader["pw"]);
+                    }
+
+                    return "s";
+
                 }
             }
-            catch (SqlException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                return "error";
             }
-        Console.WriteLine("f");
+            return "just in case";
         //Debug.WriteLine("f2");
     }
 }
