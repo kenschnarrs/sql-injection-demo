@@ -6,26 +6,61 @@ import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import axios from 'axios';
 
 function App() {
 
-  const [state, setState] = useState({un: "", pw: ""});
+  const [vulnState, setVulnState] = useState("");
+  const [secureState, setSecureState] = useState("");
 
-  function handleSubmit(){
-    console.log("click");
-    console.log(state);
-    axios.get('http://localhost:5211/My', {params: {un: state.un, pw: state.pw}, headers:{"Access-Control-Allow-Origin": "*"}})
+  const initData: Array<string> = []
+  const [data, setData] = useState(initData)
+
+  function handleVulnSubmit(){
+    console.log(vulnState);
+    axios.get('http://localhost:5211/Vulnerable', {params: {username: vulnState}, headers:{"Access-Control-Allow-Origin": "*"}})
     .then(response => {
-      console.log("OOOOOOOOOOOO");
-      console.log(response.data);
+      //console.log(response.data);
+      var data: Array<string> = []
+      response.data.forEach((element: string) => {
+        if (element != null){
+          data.push(element);
+        }
+      });
+      setData(data);
+      console.log(data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+  
+  function handleSecureSubmit(){
+    console.log(vulnState);
+    axios.get('http://localhost:5211/Secure', {params: {username: secureState}, headers:{"Access-Control-Allow-Origin": "*"}})
+    .then(response => {
+      var data: Array<string> = []
+      response.data.forEach((element: string) => {
+        if (element != null){
+          data.push(element);
+        }
+      });
+      setData(data);
+      console.log(data);
     })
     .catch(error => {
       console.log(error);
     });
   }
 
+  function handleResetSubmit(){
+    console.log(vulnState);
+    axios.get('http://localhost:5211/Reset', {headers:{"Access-Control-Allow-Origin": "*"}})
+    .then(response => {})
+    .catch(error => {
+      console.log(error);
+    });
+  }
   return (
     <div className="App">
       <header>
@@ -43,26 +78,34 @@ function App() {
           </Row>
           <Row >
             <Col md={{ span: 4, offset: 2 }}>
-            <h2>Instructions for Scenario 1</h2>
-              <p><br></br>1. Insert the text "x; DROP TABLE t1" (without the quotes) into the password input box.
+            <h3>Instructions for Scenario 1</h3>
+              <p>1. Insert the text <br></br><b>s'; DROP TABLE t1; SELECT un FROM APP_USERS WHERE un='s</b><br></br>into the user input box.
               <br></br>2. Click submit.
-              <br></br>3. View in MS SQL Server that a table has been dropped.
+              <br></br>3. The database table "t1" has now been dropped.
               </p>
               <p>
-                There are 5 tables, all with the naming conventions tx (i.e., t1, t2, ...etc.).
-                <br></br>You can thus drop 5 different tables. Use MS SQL Server to view that tables have
-                been dropped. There's also a table for "Users", but I wouldn't drop that one since
-                then you wouldn't be able to authenticate.
+                There are 5 tables, all with the naming conventions tx (i.e., t1, t2, ...etc.). You can thus drop 5 different tables. 
               </p>
-              <h2><br></br>Instructions for Scenario 2</h2>
-              <p><br></br>1. Insert the text "x OR True" (without the quotes) into the password input box.
-              <br></br>2. View that you have been authenticated.
+              <h3><br></br>Instructions for Scenario 2</h3>
+              <p>1. Insert the text <br></br><b>' OR 'x'='x</b><br></br> into the user input box.
+                <br></br>2. View that all users have been returned, rather than just 1 or 0.
               </p>
             </Col>
             <Col md={{ span: 3, offset: 1 }}>
-                <h2>Regenerate Tables</h2>
-                <p>Use this button to regenerate the tables and reset the application.</p>
-                <Button>Regenerate</Button>
+              <h3>Regenerate Tables</h3>
+              <p>Use this button to regenerate the tables and reset the application.</p>
+              <Button onClick={handleResetSubmit}>Regenerate</Button>
+              <br></br>
+              <br></br>
+              <div>
+              <h3>Resulting User</h3>
+              <p>Below the resulting user will appear when entering an exact name into the username textbox.
+                However, we can manipulate what users will appear via the above SQL injection scenarios. An example
+                intended user input is "<b>a@gmail.com</b>" (no quotes), which would yield an exact match and display the
+                matched username back to you.
+              </p>
+              {data.map(dataItem => <div key={dataItem}> {dataItem} </div>)}
+              </div>
             </Col>
           </Row>
           <Row>
@@ -70,24 +113,32 @@ function App() {
                 <Form>
                   <br></br>
                   <br></br>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                      <Form.Label>Username</Form.Label>
-                      <Form.Control type="input" placeholder="Enter username" value={state.un} onChange={e => setState({un: e.target.value, pw: state.pw})}/>
-                    </Form.Group>
-
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                      <Form.Label>Password</Form.Label>
-                      <Form.Control type="password" placeholder="Password" value={state.pw} onChange={e => setState({un: state.un, pw: e.target.value})}/>
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Vulnerable User Input (exact username match)</Form.Label>
+                    <Form.Control type="input" placeholder="Enter username" value={vulnState} onChange={e => setVulnState(e.target.value)}/>
                   </Form.Group>
-                  <Button variant="primary" onClick={handleSubmit}>
-                      Submit 
+                  
+                  <Button variant="primary" onClick={handleVulnSubmit}>
+                      Get Users 
                   </Button>
                   <br></br>
                   <br></br>
+
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Secure User Input (exact username match)</Form.Label>
+                    <Form.Control type="input" placeholder="Enter username" value={secureState} onChange={e => setSecureState(e.target.value)}/>
+                  </Form.Group>
+                  
+                  <Button variant="primary" onClick={handleSecureSubmit}>
+                      Get Users 
+                  </Button>
                 </Form>
             </Col>
           </Row>
         </Container>
+        <br></br>
+       
+        
         
       </body>
     </div>

@@ -61,6 +61,14 @@
             "System.Data.SqlClient": {
               "target": "Package",
               "version": "[4.8.2, )"
+            },
+            "System.Linq": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "linq2db.MySql": {
+              "target": "Package",
+              "version": "[5.1.1, )"
             }
           },
           "imports": [
