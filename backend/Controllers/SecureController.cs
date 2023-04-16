@@ -1,6 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
+
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+
 using MySql.Data.MySqlClient;
+//using LinqToDB;
+//using LinqToDB.DataProvider.MySql;
+//    <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.9" />
+
+using backend.Models;
+using backend.Data;
 
 namespace backend.Controllers;
 
@@ -9,12 +19,14 @@ namespace backend.Controllers;
 public class SecureController : ControllerBase
 {
     private readonly ILogger<SecureController> _logger;
+    private string _connString = "server=localhost;user=root;database=sys;port=3306;password=my_password2";
+    private readonly MyDbContext _context;
 
-    public SecureController(ILogger<SecureController> logger)
+    public SecureController(ILogger<SecureController> logger, MyDbContext context)
     {
         _logger = logger;
+        _context = context;
     }
-
 
     [HttpGet(Name = "Secure")]
     public string[] Secure(string username)
@@ -23,44 +35,22 @@ public class SecureController : ControllerBase
         Console.WriteLine(username);
         try 
             { 
-
                 /*
-                string connString = "server=localhost;user=root;database=sys;port=3306;password=my_password2";
-         
-                using (MySqlConnection connection = new MySqlConnection(connString))
+                var usernames = _context.MyEntities
+                    .Where(e => e.un == username)
+                    .Select(e => e.un)
+                    .ToArray();
+
+                if (usernames == null || usernames.Length == 0)
                 {
-                    
-                    connection.Open();
-
-                    String query = "SELECT un FROM APP_USERS WHERE un='" + username + "';";
-                    Console.WriteLine(query);
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    
-                    Console.WriteLine("reading data");
-                    string[] queryResults = new string[10];
-                    int i = 0;
-                    while (reader.Read()){
-
-                        //queryResults.Push((string)reader["un"][0]);
-                        queryResults[i] = (string)reader["un"];
-                        i += 1;
-                        Console.WriteLine((string)reader["un"]);
-                    }
-
-                    connection.Close();
-
-                    return queryResults;
+                    Console.WriteLine($"No entities found with username {username}");
+                    //return NotFound();
                 }
+
+                return usernames;
                 */
-                using (MyDataContext context = new MyDataContext())
-                {
-                    var results = from s in context.APP_USERS
-                                  where s.un = username
-                                  select s;
-
-                    return results.ToList();
-                }
+                string[] r = {"s"};
+                return r;
             }
             catch (Exception e)
             {
