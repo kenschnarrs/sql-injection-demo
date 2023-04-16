@@ -24,27 +24,22 @@ namespace backend
 
         public void ConfigureServices(IServiceCollection services)
         {
+            /*
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 31));
-            services.AddScoped<DbContext, MyDbContext>();
-
-            services.AddDbContext<MyDbContext>(
+            //services.AddSingleton(MyDbContext);
+            services.AddDbContext<IMyDbContext, MyDbContext>(
                 options => 
                     options.UseMySql(Configuration.GetConnectionString("MySqlConnection"), serverVersion)
                     .LogTo(Console.WriteLine, LogLevel.Information)
                     .EnableSensitiveDataLogging()
                     .EnableDetailedErrors()
             );
-
+            
+            services.AddScoped<IMyDbContext, MyDbContext>();
+*/
             services.AddControllers();
         }
 
-        public static void ConfigureEntityFramework(IServiceCollection services)
-        {
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 31));
-
-            services.AddDbContextPool<MyDbContext>(
-                options => options.UseMySql("server=localhost;user=root;database=sys;port=3306;password=my_password2", serverVersion));
-        }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

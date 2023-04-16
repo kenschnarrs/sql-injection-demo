@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-using MySql.Data.MySqlClient;
-//using LinqToDB;
-//using LinqToDB.DataProvider.MySql;
-//    <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.9" />
+using MySqlConnector;
+using Dapper;
 
 using backend.Models;
 using backend.Data;
@@ -20,12 +19,10 @@ public class SecureController : ControllerBase
 {
     private readonly ILogger<SecureController> _logger;
     private string _connString = "server=localhost;user=root;database=sys;port=3306;password=my_password2";
-    private readonly MyDbContext _context;
 
-    public SecureController(ILogger<SecureController> logger, MyDbContext context)
+    public SecureController(ILogger<SecureController> logger)
     {
         _logger = logger;
-        _context = context;
     }
 
     [HttpGet(Name = "Secure")]
@@ -35,22 +32,19 @@ public class SecureController : ControllerBase
         Console.WriteLine(username);
         try 
             { 
-                /*
-                var usernames = _context.MyEntities
-                    .Where(e => e.un == username)
-                    .Select(e => e.un)
-                    .ToArray();
-
-                if (usernames == null || usernames.Length == 0)
-                {
-                    Console.WriteLine($"No entities found with username {username}");
-                    //return NotFound();
+                using var connection = new MySqlConnection(_connString);
+                connection.Open();
+                var parameters = new { Username = username};
+                var entities = connection.Query<MyEntity>("SELECT un FROM APP_USERS WHERE un=@Username;", parameters).ToArray();
+                string[] queryResults = new string[10];
+                int i = 0;
+                foreach(MyEntity entity in entities){
+                    queryResults[i] = entity.un;
+                    i += 1;
                 }
 
-                return usernames;
-                */
-                string[] r = {"s"};
-                return r;
+                connection.Close();
+                return queryResults;
             }
             catch (Exception e)
             {

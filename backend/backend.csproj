@@ -7,15 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="linq2db" Version="5.1.1" />
     <PackageReference Include="linq2db.AspNet" Version="5.1.1" />
     <PackageReference Include="linq2db.MySql" Version="5.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.3.23174.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
     <PackageReference Include="MySql.Data" Version="8.0.32.1" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.0" />
-    <PackageReference Include="MySqlConnector" Version="2.3.0-beta.1" />
+    <PackageReference Include="MySqlConnector" Version="2.2.5" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />

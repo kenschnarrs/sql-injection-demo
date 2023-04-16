@@ -1,27 +1,29 @@
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
+//using MySql.EntityFrameworkCore.Extensions;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using backend.Models;
-using MySql.EntityFrameworkCore;
+//using MySql.EntityFrameworkCore;
 
 namespace backend.Data
 {
-    public class MyDbContext : DbContext
+    public class MyDbContext : DbContext, IMyDbContext
     {
         public MyDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var serverVersion = new MySqlServerVersion(new Version(5, 7, 21));
-
-            optionsBuilder.UseMySql("server=localhost;user=root;database=sys;port=3306;password=my_password2", serverVersion)
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
-        }
-
         public DbSet<MyEntity> MyEntities { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure the entity mappings here
+            modelBuilder.Entity<MyEntity>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.un).HasMaxLength(50);
+            });
+        }
     }
 }
