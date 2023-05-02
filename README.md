@@ -14,7 +14,7 @@
 1. Download a MySQL database
 2. Set up the configuration as so:
 ```"server=localhost;user=root;database=sys;port=3306;password=my_password2"```
-3. Create a ```APP_USERS``` table with with a primary key ```"id"```
+3. Create a ```APP_USERS``` table with with a primary key ```id```
 4. Run the app and click "regenerate tables"
 
 ## Information
